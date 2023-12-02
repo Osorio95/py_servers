@@ -1,3 +1,5 @@
 fastapi
 pydantic
 docker
+pymongo
+python-dotenv
