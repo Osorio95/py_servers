@@ -1,18 +1,19 @@
 import docker
 from fastapi import APIRouter, status
 from models import ContainerCreated, ContainerList, ContainerLogs
-from models import RequestContainerModel
-from lib.utils import choose_free_port
+from models import RequestCreateContainerModel, RequestListContainerModel
 from lib.db import docker_collection
+from lib.utils import choose_free_port
+from utils.container import get_docker_client
 
 router = APIRouter(prefix="/docker", tags=["Docker"])
 
-docker_client = docker.from_env()
+docker_client = get_docker_client()
 
 docker_client.images.pull("itzg/minecraft-server:latest")
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-async def docker_create(rqCont: RequestContainerModel) -> ContainerCreated:
+async def docker_create(rqCont: RequestCreateContainerModel) -> ContainerCreated:
     """
     The function `docker_create` creates and starts a Docker container running a Minecraft server.
     :return: a dictionary with a single key-value pair. The key is "message" and the value is a string
@@ -39,7 +40,7 @@ async def docker_create(rqCont: RequestContainerModel) -> ContainerCreated:
             "user_id": rqCont.user_id,
             "name": rqCont.name,
             "port": sel_port,
-            "docker_id": container.ports,
+            "docker_id": container.id,
             "game_version": rqCont.game_version,
             "game_engine": rqCont.game_engine
         })
@@ -51,14 +52,14 @@ async def docker_create(rqCont: RequestContainerModel) -> ContainerCreated:
     #     return ({"message": f"There was an error creating the container"})
 
 @router.get("/")
-async def docker_list() -> ContainerList:
+async def docker_list():
     """
     The function `docker_list` returns a dictionary containing a list of container IDs.
     """
-    containers = docker_client.containers.list(all=True)
-    container_ids = [container.id for container in containers]
+    # containers_query = docker_collection.find({"user_id": "01"})
+    containers_qty = docker_collection.count_documents({"user_id": "01"})
 
-    return {"containers": container_ids}
+    return {"containers": containers_qty}
 
 @router.get("/{id}")
 async def docker_logs(id: str) -> ContainerLogs:

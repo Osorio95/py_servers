@@ -5,7 +5,7 @@ from dotenv import load_dotenv, dotenv_values
 
 load_dotenv()
 
-_uri = os.getenv('MONGO_SECRET')
+_uri = "mongodb+srv://admin:aYBJ7elmodAKKDLY@cluster0.7mfh91n.mongodb.net/?retryWrites=true&w=majority"
 
 # Create a new client and connect to the server
 db_client = MongoClient(_uri, server_api=ServerApi('1'))

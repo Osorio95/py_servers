@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-from routers.container import router
-from routers.command import router_command
+from routers import basic_auth_user, command, container
 from fastapi.staticfiles import StaticFiles
 from lib.db import db_client, docker_collection
 
@@ -24,14 +23,17 @@ app = FastAPI(
     }
 )
 
-app.include_router(router)
-app.include_router(router_command)
+app.include_router(basic_auth_user.router)
+app.include_router(container.router)
+app.include_router(command.router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# @app.get("/")
-# async def read_root():
-#     return {"Hello": "World"}
+@app.get("/")
+async def read_root():
+    return {"Hello": "World"}
+
+print('Is running on port 8000')
 
 # Run server with: uvicorn main:app --reload
 

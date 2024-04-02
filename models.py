@@ -2,7 +2,7 @@ import uuid
 from pydantic import BaseModel, Field
 from typing import Optional
 
-class RequestContainerModel(BaseModel):
+class RequestCreateContainerModel(BaseModel):
     user_id: str
     name: str
     game_version: str
@@ -15,6 +15,16 @@ class RequestContainerModel(BaseModel):
                 "name": "minecraft-server",
                 "game_version": "1.20.1",
                 "game_engine": "FORGE"
+            }
+        }
+
+class RequestListContainerModel(BaseModel):
+    user_id: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "user_id": "01",
             }
         }
 
